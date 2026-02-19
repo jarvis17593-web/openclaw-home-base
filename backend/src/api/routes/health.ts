@@ -46,7 +46,7 @@ router.get(
         id: 'system-memory',
         timestamp: Date.now(),
         component: 'System Memory',
-        status: systemMetrics.memoryUsagePercent < 80 ? 'healthy' : systemMetrics.memoryUsagePercent < 97 ? 'degraded' : 'down',
+        status: systemMetrics.memoryUsagePercent < 80 ? 'healthy' : systemMetrics.memoryUsagePercent < 98 ? 'degraded' : 'down',
         latencyMs: undefined,
       },
     ];
