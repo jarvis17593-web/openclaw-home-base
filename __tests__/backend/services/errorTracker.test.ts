@@ -8,7 +8,7 @@ describe('ErrorTracker', () => {
   beforeEach(() => {
     // Create mock database
     mockDb = {
-      prepare: vi.fn((sql: string) => ({
+      prepare: vi.fn((_sql: string) => ({
         run: vi.fn().mockReturnValue({ changes: 1 }),
         get: vi.fn().mockReturnValue({}),
         all: vi.fn().mockReturnValue([]),
