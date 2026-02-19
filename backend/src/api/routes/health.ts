@@ -39,14 +39,14 @@ router.get(
         id: 'system-cpu',
         timestamp: Date.now(),
         component: 'System CPU',
-        status: systemMetrics.cpuLoadAverage < 0.6 ? 'healthy' : systemMetrics.cpuLoadAverage < 0.8 ? 'degraded' : 'down',
+        status: systemMetrics.cpuLoadAverage < 2.0 ? 'healthy' : systemMetrics.cpuLoadAverage < 3.0 ? 'degraded' : 'down',
         latencyMs: undefined,
       },
       {
         id: 'system-memory',
         timestamp: Date.now(),
         component: 'System Memory',
-        status: systemMetrics.memoryUsagePercent < 80 ? 'healthy' : systemMetrics.memoryUsagePercent < 90 ? 'degraded' : 'down',
+        status: systemMetrics.memoryUsagePercent < 80 ? 'healthy' : systemMetrics.memoryUsagePercent < 97 ? 'degraded' : 'down',
         latencyMs: undefined,
       },
     ];

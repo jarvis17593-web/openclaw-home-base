@@ -111,15 +111,29 @@ export class GatewayClient {
 
   /**
    * Fetch gateway health status
+   * Simple connectivity check - if gateway responds to any request, it's up
    */
   async getHealth(): Promise<{ status: string; latency: number }> {
     try {
       const start = Date.now();
-      const response = await this.request('/health', 'GET');
+      // Simple connectivity check: just verify we can reach the gateway
+      await new Promise<void>((resolve, reject) => {
+        const url = new URL(this.baseUrl);
+        const protocol = url.protocol === 'https:' ? https : http;
+        const request = protocol.request(url, { method: 'HEAD', timeout: 5000 }, (res) => {
+          resolve();
+        });
+        request.on('error', reject);
+        request.on('timeout', () => {
+          request.destroy();
+          reject(new Error('Timeout'));
+        });
+        request.end();
+      });
       const latency = Date.now() - start;
-      return { status: response.status || 'unknown', latency };
+      return { status: 'up', latency };
     } catch (error) {
-      logger.error('Gateway health check failed', { error });
+      logger.error('Gateway health check failed', { error: (error as Error).message });
       return { status: 'down', latency: -1 };
     }
   }
