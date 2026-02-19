@@ -51,9 +51,9 @@ router.get(
       },
     ];
 
-    const overallHealthy = checks.every(c => c.status === 'healthy');
-
-    res.status(overallHealthy ? 200 : 503).json(checks);
+    // Always return 200 with the health data
+    // HTTP status is for liveness/readiness probes, not for health data endpoint
+    res.status(200).json(checks);
   })
 );
 
