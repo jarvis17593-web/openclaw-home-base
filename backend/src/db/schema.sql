@@ -87,6 +87,24 @@ CREATE TABLE IF NOT EXISTS health_checks (
   created_at INTEGER NOT NULL
 );
 
+-- Error tracking table
+CREATE TABLE IF NOT EXISTS error_tracking (
+  id TEXT PRIMARY KEY,
+  timestamp INTEGER NOT NULL,
+  agent_id TEXT NOT NULL,
+  error_type TEXT NOT NULL,
+  error_code TEXT,
+  error_message TEXT NOT NULL,
+  request_id TEXT,
+  retry_count INTEGER DEFAULT 0,
+  resolved BOOLEAN DEFAULT 0,
+  resolution_notes TEXT,
+  created_at INTEGER NOT NULL,
+  resolved_at INTEGER,
+  FOREIGN KEY (agent_id) REFERENCES agents(id),
+  FOREIGN KEY (request_id) REFERENCES requests(id)
+);
+
 -- Create indexes for common queries
 -- Costs table indexes
 CREATE INDEX IF NOT EXISTS idx_costs_timestamp ON costs(timestamp);
@@ -117,3 +135,10 @@ CREATE INDEX IF NOT EXISTS idx_alerts_severity ON alerts(severity);
 -- Health checks indexes
 CREATE INDEX IF NOT EXISTS idx_health_checks_timestamp ON health_checks(timestamp);
 CREATE INDEX IF NOT EXISTS idx_health_checks_component ON health_checks(component);
+
+-- Error tracking indexes
+CREATE INDEX IF NOT EXISTS idx_error_tracking_timestamp ON error_tracking(timestamp);
+CREATE INDEX IF NOT EXISTS idx_error_tracking_agent_id ON error_tracking(agent_id);
+CREATE INDEX IF NOT EXISTS idx_error_tracking_error_type ON error_tracking(error_type);
+CREATE INDEX IF NOT EXISTS idx_error_tracking_resolved ON error_tracking(resolved);
+CREATE INDEX IF NOT EXISTS idx_error_tracking_agent_timestamp ON error_tracking(agent_id, timestamp DESC);

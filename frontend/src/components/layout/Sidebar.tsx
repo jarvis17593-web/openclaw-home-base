@@ -54,6 +54,16 @@ export function Sidebar() {
         >
           📝 Logs
         </Link>
+        <Link
+          to="/errors"
+          className={`block rounded-md px-3 py-2 text-sm font-medium transition ${
+            isActive('/errors')
+              ? 'bg-gray-200 text-gray-900'
+              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+          }`}
+        >
+          ⚠️ Errors
+        </Link>
       </nav>
 
       {/* Footer */}

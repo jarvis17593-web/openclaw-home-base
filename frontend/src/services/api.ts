@@ -116,6 +116,52 @@ class APIClient {
   async getHealth(): Promise<HealthCheck[]> {
     return this.request('GET', '/health')
   }
+
+  // Errors
+  async getErrors(hoursBack: number = 24, limit: number = 100): Promise<any> {
+    return this.request('GET', `/errors?hoursBack=${hoursBack}&limit=${limit}`)
+  }
+
+  async getErrorStats(hoursBack: number = 24): Promise<any> {
+    return this.request('GET', `/errors/stats?hoursBack=${hoursBack}`)
+  }
+
+  async getErrorTrends(hoursBack: number = 24): Promise<any> {
+    return this.request('GET', `/errors/trends?hoursBack=${hoursBack}`)
+  }
+
+  async recordError(
+    agentId: string,
+    errorType: string,
+    errorMessage: string,
+    errorCode?: string
+  ): Promise<any> {
+    return this.request('POST', '/errors', {
+      agentId,
+      errorType,
+      errorMessage,
+      errorCode,
+    })
+  }
+
+  async resolveError(errorId: string, resolutionNotes?: string): Promise<void> {
+    return this.request('PUT', `/errors/${errorId}/resolve`, {
+      resolutionNotes,
+    })
+  }
+
+  // Generic API method for custom requests
+  async getAPI(path: string, options?: { method?: string; body?: string }): Promise<any> {
+    const method = options?.method || 'GET'
+    if (method === 'GET') {
+      return this.request('GET', path)
+    } else if (method === 'POST') {
+      return this.request('POST', path, options?.body ? JSON.parse(options.body) : undefined)
+    } else if (method === 'PUT') {
+      return this.request('PUT', path, options?.body ? JSON.parse(options.body) : undefined)
+    }
+    throw new Error(`Unsupported method: ${method}`)
+  }
 }
 
 export const apiClient = new APIClient()

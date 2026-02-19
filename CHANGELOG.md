@@ -4,6 +4,29 @@ All notable changes to OpenClaw Home Base will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] — 2026-02-19 (Phase 2: Error Tracking)
+
+### Added
+
+#### Error Tracking & Analysis (First Phase 2 Feature)
+- Error tracking database schema with error categorization
+- Error repository for data persistence and querying
+- Error tracker service with categorization, trends, and statistics
+- RESTful API endpoints for error management (`GET /api/errors`, `POST /api/errors`, `PUT /api/errors/:id/resolve`)
+- Error statistics endpoint with distribution analysis
+- Error trends endpoint for time-series analysis
+- Error categorization logic (rate_limit, timeout, auth_error, server_error, invalid_input, etc.)
+- Frontend Error Tracking page with stats, distribution, and error list
+- Error resolution workflow with notes
+- 12 new unit tests for error tracking service and repository
+- TypeScript types for error records, stats, and trends
+
+### Fixed
+- Fixed missing return statement in POST /api/errors endpoint
+- Removed unused variables in health.ts and errorTracker.ts
+
+---
+
 ## [1.0.0] — 2026-02-18 (Phase 1 MVP)
 
 ### Added

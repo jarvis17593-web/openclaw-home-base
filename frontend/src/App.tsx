@@ -4,6 +4,7 @@ import { MainLayout } from './components/layout/MainLayout'
 import { Dashboard } from './pages/Dashboard'
 import { Settings } from './pages/Settings'
 import { Logs } from './pages/Logs'
+import { ErrorTracking } from './pages/ErrorTracking'
 import { Login } from './pages/Login'
 import { useAuth } from './hooks/useAuth'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -61,6 +62,16 @@ function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <Logs />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/errors"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <ErrorTracking />
                 </MainLayout>
               </ProtectedRoute>
             }

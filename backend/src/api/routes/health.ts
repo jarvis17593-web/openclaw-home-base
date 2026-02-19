@@ -25,7 +25,6 @@ router.get(
 
     // Determine component statuses
     const gatewayStatus = gatewayHealth.status === 'up' ? 'healthy' : 'down';
-    const systemStatus = systemMetrics.cpuLoadAverage < 0.8 ? 'healthy' : 'degraded';
 
     const checks = [
       {

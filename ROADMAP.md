@@ -27,7 +27,7 @@ OpenClaw Home Base development roadmap — Phase 1 complete, Phase 2 in planning
 
 ### Error Tracking & Analysis
 
-- [ ] Track and categorize API errors (rate limits, timeouts, failures)
+- [✅] Track and categorize API errors (rate limits, timeouts, failures)
 - [ ] Error retry history and success rates
 - [ ] Error trend analysis (spike detection)
 - [ ] Per-agent error breakdown

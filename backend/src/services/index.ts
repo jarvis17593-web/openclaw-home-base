@@ -29,3 +29,12 @@ export {
   getAlertEngine,
   type Alert,
 } from './alertEngine';
+
+export {
+  ErrorTracker,
+  initializeErrorTracker,
+  getErrorTracker,
+  type ErrorRecord,
+  type ErrorSummary,
+  type ErrorTrend,
+} from './errorTracker';
