@@ -16,7 +16,7 @@ class WebSocketClient {
   private maxReconnectAttempts = 5
   private reconnectDelay = 3000
 
-  constructor(url: string = 'ws://localhost:3000/ws') {
+  constructor(url: string = 'ws://localhost:3000') {
     this.url = url
   }
 

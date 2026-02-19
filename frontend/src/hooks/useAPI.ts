@@ -2,7 +2,7 @@
  * Hook for API calls with loading and error states
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { apiClient } from '../services/api'
 
 interface UseAPIState<T> {
@@ -24,13 +24,19 @@ export function useAPI<T>(
     error: null,
   })
 
+  // Memoize fn to prevent infinite loops when callers pass inline functions
+  const fnRef = useRef(fn)
+  useEffect(() => {
+    fnRef.current = fn
+  }, [fn])
+
   const execute = useCallback(async () => {
     setState({ data: null, loading: true, error: null })
     let lastError: Error | null = null
 
     for (let attempt = 0; attempt < retryCount; attempt++) {
       try {
-        const result = await fn()
+        const result = await fnRef.current()
         setState({ data: result, loading: false, error: null })
         return
       } catch (err) {
@@ -46,7 +52,7 @@ export function useAPI<T>(
 
     // All retries failed
     setState({ data: null, loading: false, error: lastError })
-  }, [fn, retryCount])
+  }, [retryCount])
 
   const refetch = useCallback(async () => {
     await execute()

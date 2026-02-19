@@ -8,9 +8,11 @@ import { useAgents } from '../hooks/useAgents'
 import { useCosts } from '../hooks/useCosts'
 import { useAPI } from '../hooks/useAPI'
 import { useWebSocket } from '../hooks/useWebSocket'
+import { useAuth } from '../hooks/useAuth'
 import { apiClient } from '../services/api'
 
 export function Dashboard() {
+  const { token } = useAuth()
   const { agents, loading: agentsLoading, error: agentsError } = useAgents()
   const { summary, loading: costsLoading } = useCosts('30d')
   const [alerts, setAlerts] = useState<any[]>([])
@@ -27,7 +29,7 @@ export function Dashboard() {
   )
 
   // Set up WebSocket for real-time updates
-  const { connected, error: wsError } = useWebSocket()
+  const { connected, error: wsError } = useWebSocket(token || undefined)
 
   React.useEffect(() => {
     if (alertsData) {
