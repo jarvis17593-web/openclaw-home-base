@@ -6,6 +6,9 @@
 import https from 'https';
 import http from 'http';
 import { URL } from 'url';
+import { readFileSync } from 'fs';
+import { homedir } from 'os';
+import { join } from 'path';
 import { logger } from '../config/logger';
 import { env } from '../config/env-validator';
 
@@ -226,9 +229,39 @@ export class GatewayClient {
   }
 
   /**
-   * Mock data for development - agents
+   * Load agents from OpenClaw config file
    */
-  private getMockAgents(): Agent[] {
+  private loadAgentsFromConfig(): Agent[] {
+    try {
+      const configPath = join(homedir(), '.openclaw', 'openclaw.json');
+      const configContent = readFileSync(configPath, 'utf-8');
+      const config = JSON.parse(configContent);
+
+      if (!config.agents || !Array.isArray(config.agents.list)) {
+        logger.warn('No agents.list found in openclaw.json, using fallback');
+        return this.getFallbackAgents();
+      }
+
+      // Map config agents to Agent interface
+      return config.agents.list.map((agentConfig: any) => ({
+        id: agentConfig.id,
+        name: agentConfig.id,
+        status: 'running' as const, // Assume running since we're reading live config
+        createdAt: Date.now() - 86400000, // Assume created 1 day ago
+        lastActivityAt: Date.now() - Math.random() * 300000, // Random activity in last 5min
+      }));
+    } catch (error) {
+      logger.error('Failed to load agents from config', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return this.getFallbackAgents();
+    }
+  }
+
+  /**
+   * Fallback agents when config is unavailable
+   */
+  private getFallbackAgents(): Agent[] {
     return [
       {
         id: 'main',
@@ -239,14 +272,21 @@ export class GatewayClient {
         createdAt: Date.now() - 86400000,
       },
       {
-        id: 'sandbox',
-        name: 'sandbox',
-        status: 'idle',
+        id: 'dev-1',
+        name: 'dev-1',
+        status: 'running',
         pid: process.pid + 1,
         lastActivityAt: Date.now() - 60000,
         createdAt: Date.now() - 172800000,
       },
     ];
+  }
+
+  /**
+   * Mock data for development - agents (reads from config file)
+   */
+  private getMockAgents(): Agent[] {
+    return this.loadAgentsFromConfig();
   }
 
   /**

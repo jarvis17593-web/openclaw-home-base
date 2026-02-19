@@ -17,6 +17,7 @@ A security-hardened, production-grade dashboard for managing OpenClaw agents, mo
 - 🔑 **Authentication** — Login page with gateway URL + token. Optional in dev, required in prod
 - 🌐 **Local & Remote** — Works on localhost, or remotely via Tailscale/VPN
 - ⚡ **Hot Reload** — Backend and frontend both watch for changes during dev
+- 🤖 **Dynamic Agent Discovery** — Automatically pulls agents from `~/.openclaw/openclaw.json`. No code changes needed when you add/remove agents!
 
 ## Quick Start
 

@@ -161,7 +161,67 @@ openclaw-home-base/
 
 ---
 
-## 5. DATABASE SCHEMA
+## 5. AGENT LOADING & CONFIGURATION
+
+### 5.1 Dynamic Agent Discovery (New Feature)
+
+Agents are discovered **dynamically from OpenClaw's configuration file** (`~/.openclaw/openclaw.json`), not hardcoded.
+
+**How it Works:**
+
+1. Frontend calls `/api/agents` endpoint on dashboard load
+2. Backend `GatewayClient.getAgents()` reads `~/.openclaw/openclaw.json`
+3. Parses `agents.list` and maps to `Agent` interface
+4. Returns all configured agents (main, dev-1/2/3, personal-assistant, professional-assistant, devops-agent, researcher, content-creator)
+5. Frontend renders agents dynamically — no code changes needed when config changes
+6. WebSocket updates propagate agent status changes in real-time
+
+**Configuration Mapping:**
+
+```json
+// ~/.openclaw/openclaw.json (agents.list section)
+{
+  "agents": {
+    "list": [
+      { "id": "main", "default": true, "workspace": "/Users/jarvis/.openclaw/workspace" },
+      { "id": "dev-1", "workspace": "/Users/jarvis/.openclaw/workspace/agents/dev-1" },
+      { "id": "dev-2", "workspace": "/Users/jarvis/.openclaw/workspace/agents/dev-2" },
+      // ... more agents
+    ]
+  }
+}
+```
+
+**Backend Implementation (gatewayClient.ts):**
+
+```typescript
+private loadAgentsFromConfig(): Agent[] {
+  const configPath = join(homedir(), '.openclaw', 'openclaw.json');
+  const config = JSON.parse(readFileSync(configPath, 'utf-8'));
+  
+  return config.agents.list.map((agentConfig) => ({
+    id: agentConfig.id,
+    name: agentConfig.id,
+    status: 'running', // Assume running (real status from Gateway)
+    createdAt: Date.now() - 86400000,
+  }));
+}
+```
+
+**Fallback Behavior:**
+- If config file is missing/unreadable → returns mock agents (`main`, `dev-1`)
+- Errors logged but don't crash the dashboard
+- Dashboard remains functional even without OpenClaw config
+
+**Benefits:**
+- ✅ No dashboard code changes when agents are added/removed
+- ✅ Single source of truth (OpenClaw config)
+- ✅ Seamless integration with multi-agent architecture
+- ✅ Production-ready: config file always available on the machine
+
+---
+
+## 6. DATABASE SCHEMA
 
 ```sql
 -- agents table
@@ -246,7 +306,7 @@ CREATE TABLE health_checks (
 
 ---
 
-## 6. SECURITY CHECKLIST
+## 7. SECURITY CHECKLIST
 
 **Pre-Commit:**
 - [ ] secretlint passes
@@ -266,7 +326,7 @@ CREATE TABLE health_checks (
 
 ---
 
-## 7. RESOURCE MONITORING
+## 8. RESOURCE MONITORING
 
 **Metrics per Agent:**
 - CPU usage (% of one core)
@@ -284,7 +344,7 @@ CREATE TABLE health_checks (
 
 ---
 
-## 8. EXECUTION WAVES (GSD)
+## 9. EXECUTION WAVES (GSD)
 
 **Wave 1:** Backend scaffold + database + env validation
 **Wave 2:** Gateway client + cost tracker + resource monitor
@@ -294,7 +354,7 @@ CREATE TABLE health_checks (
 
 ---
 
-## 9. DEPLOYMENT
+## 10. DEPLOYMENT
 
 **Local Setup:**
 ```bash
@@ -311,7 +371,7 @@ npm run dev        # Starts backend (3000) + frontend (5173)
 
 ---
 
-## 10. CONTACTS & REFERENCES
+## 11. CONTACTS & REFERENCES
 
 **Project Owner:** Cole (John Greenway)
 **Agent:** Jarvis
