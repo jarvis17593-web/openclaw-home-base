@@ -23,24 +23,37 @@ router.get(
       Promise.resolve(monitor.getSystemMetrics()),
     ]);
 
-    const healthy =
-      gatewayHealth.status === 'up' && systemMetrics.cpuLoadAverage < 0.8;
+    // Determine component statuses
+    const gatewayStatus = gatewayHealth.status === 'up' ? 'healthy' : 'down';
+    const systemStatus = systemMetrics.cpuLoadAverage < 0.8 ? 'healthy' : 'degraded';
 
-    res.status(healthy ? 200 : 503).json({
-      status: healthy ? 'healthy' : 'degraded',
-      timestamp: new Date().toISOString(),
-      components: {
-        gateway: {
-          status: gatewayHealth.status,
-          latency: gatewayHealth.latency,
-        },
-        system: {
-          cpuLoad: systemMetrics.cpuLoadAverage,
-          memoryPercent: systemMetrics.memoryUsagePercent,
-          uptime: systemMetrics.uptime,
-        },
+    const checks = [
+      {
+        id: 'gateway',
+        timestamp: Date.now(),
+        component: 'Gateway',
+        status: gatewayStatus,
+        latencyMs: gatewayHealth.latency,
       },
-    });
+      {
+        id: 'system-cpu',
+        timestamp: Date.now(),
+        component: 'System CPU',
+        status: systemMetrics.cpuLoadAverage < 2.0 ? 'healthy' : systemMetrics.cpuLoadAverage < 3.0 ? 'degraded' : 'down',
+        latencyMs: undefined,
+      },
+      {
+        id: 'system-memory',
+        timestamp: Date.now(),
+        component: 'System Memory',
+        status: systemMetrics.memoryUsagePercent < 80 ? 'healthy' : systemMetrics.memoryUsagePercent < 98 ? 'degraded' : 'down',
+        latencyMs: undefined,
+      },
+    ];
+
+    // Always return 200 with the health data
+    // HTTP status is for liveness/readiness probes, not for health data endpoint
+    res.status(200).json(checks);
   })
 );
 
