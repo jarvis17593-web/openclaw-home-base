@@ -150,6 +150,94 @@ class APIClient {
     })
   }
 
+  // Forecasts
+  async getForecast(): Promise<{
+    data: {
+      forecast: {
+        forecast7d: number
+        forecast30d: number
+        projectedMonthEnd: number
+        velocity: number
+        trend: 'up' | 'down' | 'stable'
+        confidenceLevel: number
+        variance: number
+      }
+      current: {
+        spend: number
+        daysIntoMonth: number
+        daysLeftInMonth: number
+      }
+      budget: {
+        monthly: number
+        remaining: number
+        onTrack: boolean
+        statusColor: string
+      }
+      metadata: {
+        costDataPoints: number
+        lastUpdated: string
+      }
+    }
+  }> {
+    return this.request('GET', '/forecasts')
+  }
+
+  async get7DayForecast(): Promise<{
+    data: {
+      forecast: number
+      velocity: number
+      costDataPoints: number
+    }
+  }> {
+    return this.request('GET', '/forecasts/7d')
+  }
+
+  async get30DayForecast(): Promise<{
+    data: {
+      forecast: number
+      velocity: number
+      costDataPoints: number
+    }
+  }> {
+    return this.request('GET', '/forecasts/30d')
+  }
+
+  async getTrendAnalysis(): Promise<{
+    data: {
+      trend: 'up' | 'down' | 'stable'
+      variance: number
+      confidence: number
+      costDataPoints: number
+    }
+  }> {
+    return this.request('GET', '/forecasts/trend')
+  }
+
+  async getMonthEndForecast(): Promise<{
+    data: {
+      current: number
+      projected: number
+      budget: number
+      remaining: number
+      projectedOverBudget: number
+      daysIntoMonth: number
+      daysLeft: number
+    }
+  }> {
+    return this.request('GET', '/forecasts/month-end')
+  }
+
+  async getConfidenceMetrics(): Promise<{
+    data: {
+      confidenceLevel: number
+      historicalVariance: number
+      velocity: number
+      interpretation: string
+    }
+  }> {
+    return this.request('GET', '/forecasts/confidence')
+  }
+
   // Generic API method for custom requests
   async getAPI(path: string, options?: { method?: string; body?: string }): Promise<any> {
     const method = options?.method || 'GET'

@@ -142,3 +142,23 @@ CREATE INDEX IF NOT EXISTS idx_error_tracking_agent_id ON error_tracking(agent_i
 CREATE INDEX IF NOT EXISTS idx_error_tracking_error_type ON error_tracking(error_type);
 CREATE INDEX IF NOT EXISTS idx_error_tracking_resolved ON error_tracking(resolved);
 CREATE INDEX IF NOT EXISTS idx_error_tracking_agent_timestamp ON error_tracking(agent_id, timestamp DESC);
+
+-- Budget Forecast table
+CREATE TABLE IF NOT EXISTS budget_forecasts (
+  id TEXT PRIMARY KEY,
+  period_start INTEGER NOT NULL,
+  period_end INTEGER NOT NULL,
+  forecast_7d_spend REAL,
+  forecast_30d_spend REAL,
+  velocity_per_day REAL,
+  projected_month_end REAL,
+  trend TEXT CHECK(trend IN ('up', 'down', 'stable')) DEFAULT 'stable',
+  confidence_level REAL,
+  historical_variance REAL,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+
+-- Budget Forecast indexes
+CREATE INDEX IF NOT EXISTS idx_budget_forecasts_period ON budget_forecasts(period_start, period_end);
+CREATE INDEX IF NOT EXISTS idx_budget_forecasts_created ON budget_forecasts(created_at DESC);

@@ -4,6 +4,8 @@ import { AgentList } from '../components/AgentList'
 import { CostTracker } from '../components/CostTracker'
 import { HealthStatus } from '../components/HealthStatus'
 import { AlertPanel } from '../components/AlertPanel'
+import { ForecastCard } from '../components/ForecastCard'
+import { ForecastChart } from '../components/ForecastChart'
 import { useAgents } from '../hooks/useAgents'
 import { useCosts } from '../hooks/useCosts'
 import { useAPI } from '../hooks/useAPI'
@@ -86,6 +88,12 @@ export function Dashboard() {
 
         {/* Cost Overview */}
         <CostTracker summary={summary} loading={costsLoading} />
+
+        {/* Forecast Card */}
+        <ForecastCard loading={costsLoading} />
+
+        {/* Forecast Chart */}
+        <ForecastChart />
 
         {/* Alerts */}
         {alerts.length > 0 && (

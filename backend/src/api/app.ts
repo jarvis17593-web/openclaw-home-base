@@ -16,6 +16,7 @@ import healthRouter from './routes/health';
 import alertsRouter from './routes/alerts';
 import requestsRouter from './routes/requests';
 import errorsRouter from './routes/errors';
+import forecastsRouter from './routes/forecasts';
 
 /**
  * Create and configure Express app
@@ -64,6 +65,8 @@ export function createApp(): Express {
   app.use('/api/alerts', alertsRouter);
   app.use('/api/requests', requestsRouter);
   app.use('/api/errors', errorsRouter);
+  app.use('/api/forecasts', forecastsRouter);
+  app.use('/api/forecasts', forecastsRouter);
 
   // Health check (unauthenticated)
   app.get('/healthz', (_req, res) => {

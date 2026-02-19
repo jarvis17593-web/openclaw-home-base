@@ -38,3 +38,9 @@ export {
   type ErrorSummary,
   type ErrorTrend,
 } from './errorTracker';
+
+export {
+  BudgetForecastService,
+  getBudgetForecastService,
+  type ForecastData,
+} from './budgetForecastService';
