@@ -88,14 +88,32 @@ CREATE TABLE IF NOT EXISTS health_checks (
 );
 
 -- Create indexes for common queries
+-- Costs table indexes
 CREATE INDEX IF NOT EXISTS idx_costs_timestamp ON costs(timestamp);
 CREATE INDEX IF NOT EXISTS idx_costs_agent_id ON costs(agent_id);
+CREATE INDEX IF NOT EXISTS idx_costs_agent_timestamp ON costs(agent_id, timestamp DESC);
+
+-- Requests table indexes
 CREATE INDEX IF NOT EXISTS idx_requests_timestamp ON requests(timestamp);
 CREATE INDEX IF NOT EXISTS idx_requests_agent_id ON requests(agent_id);
+CREATE INDEX IF NOT EXISTS idx_requests_agent_timestamp ON requests(agent_id, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_requests_status ON requests(status);
+
+-- Resource snapshots indexes
 CREATE INDEX IF NOT EXISTS idx_resource_snapshots_timestamp ON resource_snapshots(timestamp);
 CREATE INDEX IF NOT EXISTS idx_resource_snapshots_agent_id ON resource_snapshots(agent_id);
+CREATE INDEX IF NOT EXISTS idx_resource_snapshots_agent_timestamp ON resource_snapshots(agent_id, timestamp DESC);
+
+-- Audit logs indexes
 CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON audit_logs(timestamp);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_actor ON audit_logs(actor);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_resource ON audit_logs(resource);
+
+-- Alerts indexes
 CREATE INDEX IF NOT EXISTS idx_alerts_timestamp ON alerts(timestamp);
 CREATE INDEX IF NOT EXISTS idx_alerts_agent_id ON alerts(agent_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_severity ON alerts(severity);
+
+-- Health checks indexes
 CREATE INDEX IF NOT EXISTS idx_health_checks_timestamp ON health_checks(timestamp);
+CREATE INDEX IF NOT EXISTS idx_health_checks_component ON health_checks(component);

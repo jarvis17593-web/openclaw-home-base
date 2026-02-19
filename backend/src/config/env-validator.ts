@@ -11,8 +11,13 @@ const envSchema = z.object({
   DATABASE_ENCRYPTION_KEY: z.string().regex(/^[a-f0-9]{64}$/, 'DATABASE_ENCRYPTION_KEY must be a 64-character hex string (32 bytes)'),
 
   // OpenClaw Gateway
-  GATEWAY_URL: z.string().url('GATEWAY_URL must be a valid URL'),
-  GATEWAY_API_KEY: z.string().min(1, 'GATEWAY_API_KEY is required'),
+  GATEWAY_URL: z.string().url('GATEWAY_URL must be a valid URL').default('https://localhost:18789'),
+  GATEWAY_AUTH_TOKEN: z.string().min(1, 'GATEWAY_AUTH_TOKEN is required'),
+
+  // Budget & Monitoring
+  MONTHLY_BUDGET_USD: z.coerce.number().default(3000),
+  BUDGET_ALERT_THRESHOLD_50: z.enum(['true', 'false']).default('true').transform(v => v === 'true'),
+  BUDGET_ALERT_THRESHOLD_75: z.enum(['true', 'false']).default('true').transform(v => v === 'true'),
 
   // Database
   DATABASE_PATH: z.string().default('./data/openclaw-home-base.db'),
@@ -47,3 +52,6 @@ export function validateEnv(): Environment {
     throw error;
   }
 }
+
+// Export singleton env object
+export const env = validateEnv();
