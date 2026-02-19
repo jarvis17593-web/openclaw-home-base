@@ -81,3 +81,25 @@ export interface AuthToken {
   refreshToken: string
   expiresIn: number
 }
+
+export interface Secret {
+  id: string
+  name: string
+  description?: string
+  secretType: 'api_key' | 'token' | 'password' | 'certificate'
+  rotationFrequencyDays: number
+  lastRotatedAt?: number
+  nextRotationDueAt: number
+  daysUntilRotation: number
+  status: 'active' | 'expiring_soon' | 'expired'
+  tags?: string
+  createdAt: number
+}
+
+export interface SecretRotationSummary {
+  totalSecrets: number
+  dueForRotation: number
+  expiringInSevenDays: number
+  active: number
+  statusBreakdown: Record<string, number>
+}

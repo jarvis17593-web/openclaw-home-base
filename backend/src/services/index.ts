@@ -44,3 +44,9 @@ export {
   getBudgetForecastService,
   type ForecastData,
 } from './budgetForecastService';
+
+export {
+  SecretManagementService,
+  type SecretForDisplay,
+  type SecretRotationSummary,
+} from './secretManagementService';

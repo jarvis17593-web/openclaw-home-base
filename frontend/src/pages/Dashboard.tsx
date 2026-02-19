@@ -6,6 +6,7 @@ import { HealthStatus } from '../components/HealthStatus'
 import { AlertPanel } from '../components/AlertPanel'
 import { ForecastCard } from '../components/ForecastCard'
 import { ForecastChart } from '../components/ForecastChart'
+import { SecretsCard } from '../components/SecretsCard'
 import { useAgents } from '../hooks/useAgents'
 import { useCosts } from '../hooks/useCosts'
 import { useAPI } from '../hooks/useAPI'
@@ -19,6 +20,7 @@ export function Dashboard() {
   const { summary, loading: costsLoading } = useCosts('30d')
   const [alerts, setAlerts] = useState<any[]>([])
   const [healthChecks, setHealthChecks] = useState<any[]>([])
+  const [secretsSummary, setSecretsSummary] = useState<any>(null)
 
   const { data: alertsData, loading: alertsLoading } = useAPI(
     () => apiClient.getAlerts(),
@@ -27,6 +29,11 @@ export function Dashboard() {
 
   const { data: healthData, loading: healthLoading } = useAPI(
     () => apiClient.getHealth(),
+    true,
+  )
+
+  const { data: secretsData, loading: secretsLoading } = useAPI(
+    () => fetch('/api/secrets/summary').then((r) => r.json()),
     true,
   )
 
@@ -45,13 +52,19 @@ export function Dashboard() {
     }
   }, [healthData])
 
+  React.useEffect(() => {
+    if (secretsData) {
+      setSecretsSummary(secretsData)
+    }
+  }, [secretsData])
+
   const handleAlertAcknowledge = (alertId: string) => {
     setAlerts((prev) =>
       prev.map((a) => (a.id === alertId ? { ...a, acknowledged: true } : a)),
     )
   }
 
-  const isLoading = agentsLoading || costsLoading || alertsLoading || healthLoading
+  const isLoading = agentsLoading || costsLoading || alertsLoading || healthLoading || secretsLoading
 
   if (isLoading && agents.length === 0) {
     return (
@@ -94,6 +107,9 @@ export function Dashboard() {
 
         {/* Forecast Chart */}
         <ForecastChart />
+
+        {/* Secrets Card */}
+        <SecretsCard summary={secretsSummary} loading={secretsLoading} />
 
         {/* Alerts */}
         {alerts.length > 0 && (

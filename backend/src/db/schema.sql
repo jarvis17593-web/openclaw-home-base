@@ -162,3 +162,27 @@ CREATE TABLE IF NOT EXISTS budget_forecasts (
 -- Budget Forecast indexes
 CREATE INDEX IF NOT EXISTS idx_budget_forecasts_period ON budget_forecasts(period_start, period_end);
 CREATE INDEX IF NOT EXISTS idx_budget_forecasts_created ON budget_forecasts(created_at DESC);
+
+-- Secrets Management table
+CREATE TABLE IF NOT EXISTS secrets_management (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  description TEXT,
+  secret_type TEXT CHECK(secret_type IN ('api_key', 'token', 'password', 'certificate')) DEFAULT 'api_key',
+  encrypted_value TEXT NOT NULL,
+  iv TEXT NOT NULL,
+  auth_tag TEXT NOT NULL,
+  rotation_frequency_days INTEGER CHECK(rotation_frequency_days IN (30, 60, 90)) DEFAULT 90,
+  last_rotated_at INTEGER,
+  next_rotation_due_at INTEGER NOT NULL,
+  status TEXT CHECK(status IN ('active', 'expiring_soon', 'expired')) DEFAULT 'active',
+  tags TEXT,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+
+-- Secrets Management indexes
+CREATE INDEX IF NOT EXISTS idx_secrets_management_status ON secrets_management(status);
+CREATE INDEX IF NOT EXISTS idx_secrets_management_next_rotation ON secrets_management(next_rotation_due_at);
+CREATE INDEX IF NOT EXISTS idx_secrets_management_created ON secrets_management(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_secrets_management_type ON secrets_management(secret_type);

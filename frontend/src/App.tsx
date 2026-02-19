@@ -5,6 +5,7 @@ import { Dashboard } from './pages/Dashboard'
 import { Settings } from './pages/Settings'
 import { Logs } from './pages/Logs'
 import { ErrorTracking } from './pages/ErrorTracking'
+import { SecretsPage } from './pages/SecretsPage'
 import { Login } from './pages/Login'
 import { useAuth } from './hooks/useAuth'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -72,6 +73,16 @@ function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <ErrorTracking />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/secrets"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <SecretsPage />
                 </MainLayout>
               </ProtectedRoute>
             }
