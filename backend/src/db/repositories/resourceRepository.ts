@@ -3,8 +3,10 @@
  * Data access layer for resource metrics
  */
 
-import { Database } from 'better-sqlite3';
+// import { Database } from 'better-sqlite3';
 import { logger } from '../../config/logger';
+
+type Database = any;
 
 export interface ResourceSnapshot {
   id: string;

@@ -3,8 +3,10 @@
  * Data access layer for cost records
  */
 
-import { Database } from 'better-sqlite3';
+// import { Database } from 'better-sqlite3';
 import { logger } from '../../config/logger';
+
+type Database = any;
 
 export interface CostRecord {
   id: string;

@@ -3,8 +3,10 @@
  * Data access layer for API request records
  */
 
-import { Database } from 'better-sqlite3';
+// import { Database } from 'better-sqlite3';
 import { logger } from '../../config/logger';
+
+type Database = any;
 
 export interface RequestRecord {
   id: string;

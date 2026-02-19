@@ -3,8 +3,10 @@
  * Data access layer for audit logs
  */
 
-import { Database } from 'better-sqlite3';
+// import { Database } from 'better-sqlite3';
 import { logger } from '../../config/logger';
+
+type Database = any;
 
 export interface AuditLogRecord {
   id: string;
