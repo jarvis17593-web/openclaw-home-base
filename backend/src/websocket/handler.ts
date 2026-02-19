@@ -32,11 +32,17 @@ export function initializeWebSocket(httpServer: Server): WebSocketServer {
  * Handle new WebSocket connection
  */
 function handleConnection(ws: AuthenticatedWebSocket, req: any, _wss: WebSocketServer): void {
-  const token = extractToken(req.url);
+  // Skip auth in development mode
+  if (env.NODE_ENV === 'development') {
+    ws.userId = 'dev-user';
+    logger.info('WebSocket client connected (dev mode)');
+  } else {
+    const token = extractToken(req.url);
 
-  if (!token || !verifyToken(token, ws)) {
-    (ws as WebSocket).close(4001, 'Unauthorized');
-    return;
+    if (!token || !verifyToken(token, ws)) {
+      (ws as WebSocket).close(4001, 'Unauthorized');
+      return;
+    }
   }
 
   logger.info('WebSocket client connected', { userId: ws.userId });
