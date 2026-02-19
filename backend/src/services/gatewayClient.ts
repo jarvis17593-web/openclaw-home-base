@@ -243,7 +243,7 @@ export class GatewayClient {
    * Mock data for development - agents
    */
   private getMockAgents(): Agent[] {
-    return [
+    const agents: Agent[] = [
       {
         id: 'main',
         name: 'main',
@@ -261,6 +261,39 @@ export class GatewayClient {
         createdAt: Date.now() - 172800000,
       },
     ];
+
+    // Development agents
+    const devAgents = ['dev-1', 'dev-2', 'dev-3'];
+    devAgents.forEach((id, idx) => {
+      agents.push({
+        id,
+        name: id,
+        status: idx === 0 ? 'running' : 'idle',
+        lastActivityAt: Date.now() - (idx + 1) * 30000,
+        createdAt: Date.now() - (idx + 1) * 172800000,
+      });
+    });
+
+    // Specialist agents
+    const specialists = [
+      { id: 'personal-assistant', name: 'personal-assistant' },
+      { id: 'professional-assistant', name: 'professional-assistant' },
+      { id: 'devops-agent', name: 'devops-agent' },
+      { id: 'researcher', name: 'researcher' },
+      { id: 'content-creator', name: 'content-creator' },
+    ];
+
+    specialists.forEach((agent, idx) => {
+      agents.push({
+        id: agent.id,
+        name: agent.name,
+        status: Math.random() > 0.6 ? 'running' : 'idle',
+        lastActivityAt: Date.now() - Math.random() * 3600000,
+        createdAt: Date.now() - Math.random() * 604800000,
+      });
+    });
+
+    return agents;
   }
 
   /**
@@ -269,30 +302,31 @@ export class GatewayClient {
   private getMockCosts(agentId?: string): CostData[] {
     const now = Date.now();
     const mockCosts: CostData[] = [];
+    const allAgents = ['main', 'sandbox', 'dev-1', 'dev-2', 'dev-3', 'personal-assistant', 'professional-assistant', 'devops-agent', 'researcher', 'content-creator'];
+    const providers = ['openai', 'anthropic', 'google'];
+    const models: { [key: string]: string[] } = {
+      openai: ['gpt-4-turbo', 'gpt-4', 'gpt-3.5-turbo'],
+      anthropic: ['claude-3-sonnet', 'claude-3-opus', 'claude-3-haiku'],
+      google: ['gemini-pro', 'gemini-pro-vision'],
+    };
 
-    // Generate 30 days of mock cost data
+    // Generate 30 days of mock cost data for all agents
     for (let i = 0; i < 30; i++) {
       const timestamp = now - i * 86400000;
-      mockCosts.push(
-        {
+      allAgents.forEach((aid) => {
+        const provider = providers[Math.floor(Math.random() * providers.length)];
+        const modelList = models[provider];
+        const model = modelList[Math.floor(Math.random() * modelList.length)];
+        mockCosts.push({
           timestamp,
-          agentId: 'main',
-          provider: 'openai',
-          model: 'gpt-4-turbo',
-          tokensIn: 2000,
-          tokensOut: 1000,
-          costUsd: 0.12,
-        },
-        {
-          timestamp,
-          agentId: 'sandbox',
-          provider: 'anthropic',
-          model: 'claude-3-sonnet',
-          tokensIn: 1500,
-          tokensOut: 800,
-          costUsd: 0.08,
-        }
-      );
+          agentId: aid,
+          provider,
+          model,
+          tokensIn: Math.floor(1000 + Math.random() * 3000),
+          tokensOut: Math.floor(500 + Math.random() * 1500),
+          costUsd: parseFloat((Math.random() * 0.3).toFixed(2)),
+        });
+      });
     }
 
     return agentId
@@ -306,28 +340,21 @@ export class GatewayClient {
   private getMockResources(agentId?: string): ResourceData[] {
     const now = Date.now();
     const mockResources: ResourceData[] = [];
+    const allAgents = ['main', 'sandbox', 'dev-1', 'dev-2', 'dev-3', 'personal-assistant', 'professional-assistant', 'devops-agent', 'researcher', 'content-creator'];
 
     // Generate 24 hours of mock resource data
     for (let i = 0; i < 24; i++) {
       const timestamp = now - i * 3600000;
-      mockResources.push(
-        {
+      allAgents.forEach((aid) => {
+        mockResources.push({
           timestamp,
-          agentId: 'main',
-          cpuPercent: 15 + Math.random() * 30,
-          memoryRss: 256 * 1024 * 1024,
-          memoryPercent: 25 + Math.random() * 15,
-          openFds: 50 + Math.floor(Math.random() * 30),
-        },
-        {
-          timestamp,
-          agentId: 'sandbox',
-          cpuPercent: 5 + Math.random() * 15,
-          memoryRss: 128 * 1024 * 1024,
-          memoryPercent: 12 + Math.random() * 8,
-          openFds: 30 + Math.floor(Math.random() * 20),
-        }
-      );
+          agentId: aid,
+          cpuPercent: 5 + Math.random() * 25,
+          memoryRss: (64 + Math.random() * 256) * 1024 * 1024,
+          memoryPercent: 10 + Math.random() * 30,
+          openFds: 20 + Math.floor(Math.random() * 50),
+        });
+      });
     }
 
     return agentId
