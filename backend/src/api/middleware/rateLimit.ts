@@ -83,6 +83,13 @@ const limiter = new RateLimiter();
  * Rate limit middleware
  */
 export function rateLimit(req: Request, res: Response, next: NextFunction): void {
+  // Disable rate limiting in development
+  if (env.NODE_ENV === 'development') {
+    res.setHeader('X-RateLimit-Remaining', 'unlimited');
+    next();
+    return;
+  }
+
   const key = req.ip || 'unknown';
 
   if (!limiter.isAllowed(key)) {

@@ -4,6 +4,7 @@
  */
 
 import https from 'https';
+import http from 'http';
 import { URL } from 'url';
 import { logger } from '../config/logger';
 import { env } from '../config/env-validator';
@@ -162,6 +163,7 @@ export class GatewayClient {
     return new Promise((resolve, reject) => {
       try {
         const url = new URL(this.baseUrl + path);
+        const protocol = url.protocol === 'https:' ? https : http;
         const options = {
           method,
           headers: {
@@ -171,7 +173,7 @@ export class GatewayClient {
           timeout: 10000,
         };
 
-        const request = https.request(url, options, (res) => {
+        const request = protocol.request(url, options, (res) => {
           let data = '';
 
           res.on('data', (chunk) => {

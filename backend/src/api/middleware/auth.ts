@@ -18,6 +18,13 @@ export interface AuthRequest extends Request {
  * JWT verification middleware
  */
 export function authenticate(req: AuthRequest, res: Response, next: NextFunction): void {
+  // Skip auth in development mode
+  if (env.NODE_ENV === 'development') {
+    req.user = { id: 'dev-user', iat: Math.floor(Date.now() / 1000) };
+    next();
+    return;
+  }
+
   try {
     const token = extractToken(req);
 

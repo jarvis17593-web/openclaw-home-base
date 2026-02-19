@@ -2,7 +2,7 @@
  * Hook for API calls with loading and error states
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { apiClient } from '../services/api'
 
 interface UseAPIState<T> {
@@ -39,9 +39,11 @@ export function useAPI<T>(
   }, [execute])
 
   // Auto-execute on mount if immediate is true
-  if (immediate && state.data === null && !state.loading && state.error === null) {
-    execute()
-  }
+  useEffect(() => {
+    if (immediate) {
+      execute()
+    }
+  }, [immediate, execute])
 
   return { ...state, refetch }
 }

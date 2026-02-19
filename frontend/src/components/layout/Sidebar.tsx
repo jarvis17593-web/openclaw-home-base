@@ -1,10 +1,18 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth'
 
 export function Sidebar() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { logout } = useAuth()
 
   const isActive = (path: string) => location.pathname === path
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
 
   return (
     <div className="flex h-full flex-col border-r border-gray-200 bg-gray-50">
@@ -49,8 +57,14 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 px-3 py-4">
+      <div className="border-t border-gray-200 px-3 py-4 space-y-2">
         <p className="text-xs text-gray-500">v1.0.0-wave4</p>
+        <button
+          onClick={handleLogout}
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-100"
+        >
+          🚪 Sign Out
+        </button>
       </div>
     </div>
   )

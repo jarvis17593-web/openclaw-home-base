@@ -2,7 +2,7 @@
 
 A security-hardened, production-grade dashboard for managing OpenClaw agents, monitoring API costs, tracking system health, and viewing request logs.
 
-**Status:** Phase 1 MVP — Waves 1-4 Complete ✅
+**Status:** Phase 1 MVP — Waves 1-4 Complete ✅ | Local Dev Ready ✅
 
 ## Features
 
@@ -14,18 +14,22 @@ A security-hardened, production-grade dashboard for managing OpenClaw agents, mo
 - 🔐 **Security-First** — AES-256-GCM encryption, JWT auth, audit logging, zero secrets in code
 - 🔄 **Real-Time Updates** — WebSocket for live agent status and cost updates
 - 📱 **Responsive UI** — React + Tailwind CSS, works on desktop and mobile
+- 🔑 **Authentication** — Login page with gateway URL + token. Optional in dev, required in prod
+- 🌐 **Local & Remote** — Works on localhost, or remotely via Tailscale/VPN
+- ⚡ **Hot Reload** — Backend and frontend both watch for changes during dev
 
 ## Quick Start
 
 ### Prerequisites
 - Node.js 22+
 - npm 10+
+- OpenClaw running locally (`openclaw gateway start`) or accessible remotely
 
 ### Installation
 
 ```bash
 # Clone the repo
-git clone https://github.com/[username]/openclaw-home-base
+git clone https://github.com/jarvis17593-web/openclaw-home-base
 cd openclaw-home-base
 
 # Install dependencies
@@ -34,18 +38,57 @@ npm install
 # Copy environment template and configure
 cp .env.example .env
 nano .env  # Edit with your settings
-
-# Initialize database
-npm run db:init
 ```
 
-### Development
+### Local Development
 
 ```bash
 # Start both backend (3000) and frontend (5173) in dev mode
 npm run dev
 
 # Open browser: http://localhost:5173
+# You'll see the login page. Sign in with:
+#   Gateway URL: http://127.0.0.1:18789 (or your remote instance)
+#   Gateway Token: found via `openclaw status`
+
+# In development mode:
+# - Auth is optional (uses dev-user by default)
+# - Rate limiting is disabled
+# - Hot reload enabled for both backend and frontend
+```
+
+### Database Setup (if needed)
+
+```bash
+# Initialize encrypted database
+npm run db:init
+
+# Create backup
+npm run db:backup
+```
+
+### Authentication
+
+The dashboard includes a **login page** that accepts:
+- **Gateway URL** — Where OpenClaw is running (local or remote)
+- **Gateway Token** — Auth token from OpenClaw (`openclaw status`)
+
+**Development Mode:**
+- Auth is optional. Backend uses `dev-user` by default
+- Credentials stored in browser's localStorage
+- Great for testing without OpenClaw auth
+
+**Production Mode:**
+- Full JWT authentication required
+- 15-minute access tokens, 7-day refresh tokens
+- Invalid tokens trigger redirect to login
+- Credentials never sent as query params or URL fragments
+
+**To Get Your Gateway Token:**
+```bash
+$ openclaw status
+# Look for: Gateway · auth token · Jarviss-Mini (192.168.0.107)
+# Token format: Usually 32+ characters
 ```
 
 ### Production Build
@@ -180,6 +223,49 @@ Browser (React UI)
     │                    ↓
     └─← WebSocket ←── Real-time events
          (bi-directional)
+```
+
+## Recent Improvements (Wave 5 - Local Dev Setup)
+
+### Bug Fixes
+
+| Issue | Fix | Details |
+|-------|-----|---------|
+| **Tailwind CSS Missing** | Added root-level `tailwind.config.js` + `postcss.config.js` | CSS now includes full Tailwind utilities (5KB → 13KB) |
+| **HTTP Gateway Not Supported** | Modified `gatewayClient.ts` to detect protocol | Now supports both `http://` and `https://` gateway URLs |
+| **Infinite API Loop** | Refactored `useAPI.ts` hook with `useEffect` | Fixed render-in-render issue causing rapid refreshes |
+| **Rate Limiting in Dev** | Disabled limiter in `NODE_ENV=development` | Dev mode now unlimited; production still protected |
+| **Auth Required in Dev** | Skip JWT in dev mode, require in prod | Login optional for local testing |
+| **ESM Compatibility** | Changed `require.main === module` to `import.meta.url` | Proper ES module support in `server.ts` |
+
+### New Features
+
+- ✅ **Login Page** (`/frontend/src/pages/Login.tsx`) — Gateway URL + token form
+- ✅ **Protected Routes** — Automatic redirect to `/login` for unauthenticated users
+- ✅ **Logout Button** — Sign out from sidebar
+- ✅ **Persistent Credentials** — localStorage for seamless reconnects
+- ✅ **Hot Reload** — Both backend and frontend watch changes
+
+### Files Changed
+```
+backend/src/
+├── api/middleware/auth.ts          ← Skip JWT in dev
+├── api/middleware/rateLimit.ts     ← Disable in dev
+├── server.ts                       ← ESM fix
+└── services/gatewayClient.ts       ← HTTP support
+
+frontend/src/
+├── pages/Login.tsx                 ← NEW login page
+├── hooks/useAPI.ts                 ← Fixed infinite loop
+├── hooks/useAuth.ts                ← Persist creds
+├── App.tsx                         ← Protected routes
+├── services/api.ts                 ← Conditional 401
+└── components/layout/Sidebar.tsx   ← Logout button
+
+root/
+├── tailwind.config.js              ← NEW
+├── postcss.config.js               ← NEW
+└── .env                            ← NEW local dev config
 ```
 
 ## API Endpoints

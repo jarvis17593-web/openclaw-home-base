@@ -55,7 +55,10 @@ class APIClient {
     if (!response.ok) {
       if (response.status === 401) {
         this.clearToken()
-        window.location.href = '/login'
+        // Only redirect to login in production
+        if (process.env.NODE_ENV === 'production') {
+          window.location.href = '/login'
+        }
       }
       throw new Error(`API error: ${response.statusText}`)
     }

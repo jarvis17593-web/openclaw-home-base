@@ -16,6 +16,7 @@ export function useAuth() {
     if (stored) {
       setToken(stored)
       setIsAuthenticated(true)
+      apiClient.setToken(stored)
     }
     setLoading(false)
   }, [])
@@ -26,6 +27,8 @@ export function useAuth() {
         setLoading(true)
         // In a real app, you'd exchange credentials for an access token
         // For now, we'll use the gateway token directly
+        localStorage.setItem('gatewayUrl', gatewayUrl)
+        localStorage.setItem('authToken', gatewayToken)
         apiClient.setToken(gatewayToken)
         setToken(gatewayToken)
         setIsAuthenticated(true)
@@ -40,6 +43,8 @@ export function useAuth() {
   )
 
   const logout = useCallback(() => {
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('gatewayUrl')
     apiClient.clearToken()
     setToken(null)
     setIsAuthenticated(false)

@@ -58,7 +58,7 @@ export async function shutdownServer(server: http.Server): Promise<void> {
 }
 
 // Handle process signals
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   let server: http.Server;
 
   startServer()
