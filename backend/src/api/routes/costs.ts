@@ -10,15 +10,30 @@ import { getGatewayClient, getCostTracker } from '../../services';
 const router = Router();
 
 /**
+ * GET /api/costs
+ * List all costs
+ */
+router.get(
+  '/',
+  authenticate,
+  asyncHandler(async (_req: AuthRequest, res) => {
+    const gateway = getGatewayClient();
+    const costs = await gateway.getCosts();
+    res.json(costs);
+  })
+);
+
+/**
  * GET /api/costs/summary
  * Get cost summary (24h, 7d, 30d)
  */
 router.get(
   '/summary',
   authenticate,
-  asyncHandler(async (_req: AuthRequest, res) => {
+  asyncHandler(async (req: AuthRequest, res) => {
     const gateway = getGatewayClient();
     const tracker = getCostTracker();
+    const { period = '30d' } = req.query;
 
     const costs = await gateway.getCosts();
 
@@ -35,29 +50,29 @@ router.get(
       'monthly'
     );
 
-    res.json({
-      data: {
-        daily: {
-          totalCostUsd: daily.totalCostUsd,
-          requestCount: daily.requestCount,
-          agentBreakdown: daily.agentBreakdown,
-        },
-        weekly: {
-          totalCostUsd: weekly.totalCostUsd,
-          requestCount: weekly.requestCount,
-          agentBreakdown: weekly.agentBreakdown,
-        },
-        monthly: {
-          totalCostUsd: monthly.totalCostUsd,
-          requestCount: monthly.requestCount,
-          agentBreakdown: monthly.agentBreakdown,
-        },
-        budget: {
-          monthly: tracker.getBudget(),
-          monthlyPercent: (monthly.totalCostUsd / tracker.getBudget()) * 100,
-        },
-      },
-    });
+    // For getCostSummary hook compatibility
+    let responseData;
+    if (period === '24h') {
+      responseData = {
+        total: daily.totalCostUsd,
+        avgDaily: daily.totalCostUsd,
+        trend: 'stable',
+      };
+    } else if (period === '7d') {
+      responseData = {
+        total: weekly.totalCostUsd,
+        avgDaily: weekly.totalCostUsd / 7,
+        trend: 'stable',
+      };
+    } else {
+      responseData = {
+        total: monthly.totalCostUsd,
+        avgDaily: monthly.totalCostUsd / 30,
+        trend: 'stable',
+      };
+    }
+
+    res.json(responseData);
   })
 );
 

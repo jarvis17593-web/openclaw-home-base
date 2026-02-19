@@ -27,7 +27,7 @@ export function Dashboard() {
   )
 
   // Set up WebSocket for real-time updates
-  const { connected } = useWebSocket()
+  const { connected, error: wsError } = useWebSocket()
 
   React.useEffect(() => {
     if (alertsData) {
@@ -47,13 +47,41 @@ export function Dashboard() {
     )
   }
 
+  const isLoading = agentsLoading || costsLoading || alertsLoading || healthLoading
+
+  if (isLoading && agents.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <Header title="Dashboard" subtitle="Loading..." />
+        <div className="flex items-center justify-center p-6">
+          <div className="text-center">
+            <div className="mb-4 text-4xl">🤖</div>
+            <p className="text-gray-600">Loading dashboard...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header
         title="Dashboard"
-        subtitle={`WebSocket: ${connected ? '🟢 Connected' : '🔴 Disconnected'}`}
+        subtitle={`WebSocket: ${connected ? '🟢 Connected' : '🔴 Disconnected'}${wsError ? ' (error)' : ''}`}
       />
       <div className="space-y-6 p-6">
+        {/* WebSocket Error Warning */}
+        {wsError && (
+          <div className="rounded-md bg-yellow-50 p-4">
+            <p className="text-sm font-medium text-yellow-800">
+              ⚠️ WebSocket connection failed: {wsError.message}
+            </p>
+            <p className="mt-1 text-xs text-yellow-700">
+              Real-time updates won't work, but dashboard is still functional
+            </p>
+          </div>
+        )}
+
         {/* Cost Overview */}
         <CostTracker summary={summary} loading={costsLoading} />
 

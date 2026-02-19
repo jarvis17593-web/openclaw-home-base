@@ -20,10 +20,7 @@ router.get(
     const gateway = getGatewayClient();
     const agents = await gateway.getAgents();
 
-    res.json({
-      data: agents,
-      count: agents.length,
-    });
+    res.json(agents);
   })
 );
 
@@ -50,10 +47,8 @@ router.get(
     const latestResource = resources[0] || null;
 
     res.json({
-      data: {
-        ...agent,
-        metrics: latestResource,
-      },
+      ...agent,
+      metrics: latestResource,
     });
   })
 );

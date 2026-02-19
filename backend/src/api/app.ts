@@ -13,6 +13,8 @@ import { logger } from '../config/logger';
 import agentsRouter from './routes/agents';
 import costsRouter from './routes/costs';
 import healthRouter from './routes/health';
+import alertsRouter from './routes/alerts';
+import requestsRouter from './routes/requests';
 
 /**
  * Create and configure Express app
@@ -58,6 +60,8 @@ export function createApp(): Express {
   app.use('/api/agents', agentsRouter);
   app.use('/api/costs', costsRouter);
   app.use('/api/health', healthRouter);
+  app.use('/api/alerts', alertsRouter);
+  app.use('/api/requests', requestsRouter);
 
   // Health check (unauthenticated)
   app.get('/healthz', (_req, res) => {

@@ -20,11 +20,15 @@ export function useWebSocket(token?: string) {
 
     wsClient.onConnection(handleConnection)
 
+    // Attempt to connect, but don't throw if it fails
+    // WebSocket will keep trying to reconnect in the background
     wsClient
       .connect(token)
       .catch((err) => {
         if (mounted) {
+          console.warn('WebSocket connection failed:', err)
           setError(err instanceof Error ? err : new Error(String(err)))
+          // Don't throw - dashboard is still functional without WebSocket
         }
       })
 
