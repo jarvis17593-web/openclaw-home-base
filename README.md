@@ -58,6 +58,34 @@ npm run dev
 # - Hot reload enabled for both backend and frontend
 ```
 
+### Port Configuration
+
+The backend server port is configurable via the `PORT` environment variable:
+
+**Default port (3000):**
+```bash
+npm run dev
+# or explicitly:
+npm run dev:backend
+# Server runs on http://localhost:3000
+```
+
+**Custom port:**
+```bash
+# Use environment variable to override default
+PORT=9000 npm run dev
+# or backend only:
+PORT=9000 npm run dev:backend
+# Server runs on http://localhost:9000
+```
+
+**Port Assignment:**
+- **OpenClaw Home Base:** 3000 (default, primary API)
+- **CertPrep:** 3001 (secondary API, if running)
+- **Reserved for future services:** 3002+ (other local services)
+
+**Note:** The frontend always runs on port 5173. Update `CORS_ORIGIN` in `.env` if you change the backend port to a non-standard value.
+
 ### Database Setup (if needed)
 
 ```bash
@@ -135,26 +163,31 @@ All variables documented in `.env.example`. Key ones:
 
 ```bash
 # Server
-PORT=3000
-NODE_ENV=development
-LOG_LEVEL=info
+PORT=3000                          # Backend API port (default 3000, configurable via env var)
+NODE_ENV=development               # development|production|test
+LOG_LEVEL=info                     # debug|info|warn|error
 
 # Database (generates during setup)
-DATABASE_PATH=data/openclaw-home-base.db
+DATABASE_PATH=./data/openclaw-home-base.db
 DATABASE_ENCRYPTION_KEY=<64-char hex>
 
 # JWT (generate: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
 JWT_SECRET=<32+ chars>
 JWT_REFRESH_SECRET=<32+ chars>
-JWT_EXPIRY_HOURS=24
 
 # OpenClaw Gateway
 GATEWAY_URL=http://localhost:18789
-GATEWAY_API_KEY=<your-api-key>
+GATEWAY_AUTH_TOKEN=<your-auth-token>
 
 # CORS
-CORS_ORIGIN=http://localhost:5173
+CORS_ORIGIN=http://localhost:5173 # Update if backend port changes
 ```
+
+**PORT Environment Variable:**
+- Default: `3000` (if PORT env var not set)
+- Override: `PORT=9000 npm run dev`
+- Required: No (optional, falls back to 3000)
+- Used in: Backend API server only (frontend always uses 5173)
 
 ## Scripts
 
